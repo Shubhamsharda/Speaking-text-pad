@@ -53,6 +53,6 @@ public void dospeak(String speak,String  voicename)
 
 public static void main(String[] args)    
 {    
-    TextToSpeech obj=new TextToSpeech(); obj.dospeak("this is very good place lol","kevin16");    
+    TextToSpeech obj=new TextToSpeech(); obj.dospeak("this is very good place","kevin16");    
 }    
 }
