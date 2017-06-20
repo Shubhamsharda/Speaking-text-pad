@@ -11,6 +11,8 @@ import javax.speech.synthesis.Voice;
 import texttospeech.TextToSpeech;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -280,11 +282,18 @@ TextToSpeech obj=new TextToSpeech();
         // TODO add your handling code here:
         //Front.this.repaint();
         FileFilter ft = new FileNameExtensionFilter("Text Files", "txt");
+        FileFilter ft2 = new FileNameExtensionFilter("PDF Files", "pdf");
         jFileChooser1.addChoosableFileFilter(ft);
+        jFileChooser1.addChoosableFileFilter(ft2);
      
         if(jFileChooser1.showOpenDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION)
         {
             File fSelected = jFileChooser1.getSelectedFile();
+            String filename = fSelected.getName();                              //Trying to get the type of file.
+            int dotIndex = filename.lastIndexOf('.');
+            String type = (dotIndex == -1) ? "" : filename.substring(dotIndex + 1);
+            if(type.equals("txt"))
+            {    
             try
             {
                 FileReader in = new FileReader(fSelected);
@@ -293,6 +302,21 @@ TextToSpeech obj=new TextToSpeech();
             } catch(IOException ioe)
             {
                 System.out.println("Error in reading file "+ioe);
+            }
+            }
+            else if(type.equals("pdf"))
+            {
+                try{ 
+                PDDocument document = PDDocument.load(fSelected);
+                PDFTextStripper pdfStripper = new PDFTextStripper();
+                String text = pdfStripper.getText(document);
+                 jTextArea1.setText(text);
+                 document.close();
+
+                }catch(Exception e)
+                {
+                    System.out.println("pdf not opening "+e);
+                }
             }
         }
         
