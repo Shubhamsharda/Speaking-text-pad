@@ -1,5 +1,6 @@
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,6 +14,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -316,6 +321,33 @@ TextToSpeech obj=new TextToSpeech();
                 }catch(Exception e)
                 {
                     System.out.println("pdf not opening "+e);
+                }
+            }
+            else if(type.equals("doc"))
+            {
+                try{
+                 FileInputStream fis = new FileInputStream(fSelected);
+                 HWPFDocument document = new HWPFDocument(fis);
+                 WordExtractor extractor = new WordExtractor(document);
+                 jTextArea1.setText(extractor.getText());
+                 extractor.close();
+                }catch(Exception e)
+                {
+                    
+                    System.out.println("Error while opening doc/x file "+e);
+                }
+            }
+            else if(type.equals("docx"))
+            {
+                try{
+                FileInputStream fis = new FileInputStream(fSelected);
+                 XWPFDocument document = new XWPFDocument(fis);
+                 XWPFWordExtractor extractor = new XWPFWordExtractor(document);
+                 jTextArea1.setText(extractor.getText());
+                 extractor.close();
+                }catch(Exception e)
+                {
+                    System.out.println("Error during reading docx document "+e);
                 }
             }
         }
