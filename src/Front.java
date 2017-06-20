@@ -1,9 +1,13 @@
 
+import java.awt.font.NumericShaper.Range;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Locale;
 import javax.speech.Central;
 import javax.speech.synthesis.Synthesizer;
@@ -16,8 +20,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.hwpf.usermodel.CharacterRun;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -95,6 +103,11 @@ public class Front extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        jRadioButtonMenuItem1 = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItem2 = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItem3 = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItem4 = new javax.swing.JRadioButtonMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -161,8 +174,43 @@ public class Front extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem2);
 
+        jMenu3.setText("jMenu3");
+
+        jRadioButtonMenuItem1.setSelected(true);
+        jRadioButtonMenuItem1.setText("Text File");
+        jRadioButtonMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jRadioButtonMenuItem1);
+
+        jRadioButtonMenuItem2.setSelected(true);
+        jRadioButtonMenuItem2.setText("Pdf File");
+        jMenu3.add(jRadioButtonMenuItem2);
+
+        jRadioButtonMenuItem3.setSelected(true);
+        jRadioButtonMenuItem3.setText("Doc File");
+        jRadioButtonMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jRadioButtonMenuItem3);
+
+        jRadioButtonMenuItem4.setSelected(true);
+        jRadioButtonMenuItem4.setText("Docx File");
+        jRadioButtonMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jRadioButtonMenuItem4);
+
+        jMenu1.add(jMenu3);
+
         jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem3.setText("Save");
+        jMenuItem3.setText("Save As");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem3ActionPerformed(evt);
@@ -358,6 +406,90 @@ TextToSpeech obj=new TextToSpeech();
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenu1ActionPerformed
 
+    private void jRadioButtonMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItem1ActionPerformed
+        // TODO add your handling code here:
+          FileFilter ft = new FileNameExtensionFilter("Text Files", "txt");
+        jFileChooser1.addChoosableFileFilter(ft);
+        if(jFileChooser1.showSaveDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION)
+        {
+            File fSelected = jFileChooser1.getSelectedFile();
+            try
+            {
+                FileWriter out = new FileWriter(fSelected);
+                jTextArea1.write(out);
+                out.close();
+            } catch(IOException ioe)
+            {
+                System.out.println("Error in saving file "+ioe);
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuItem1ActionPerformed
+
+    private void jRadioButtonMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItem4ActionPerformed
+      
+         if(jFileChooser1.showSaveDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION)
+        {
+            File fSelected = jFileChooser1.getSelectedFile();
+            try
+            {
+                //Blank Document
+                 XWPFDocument document= new XWPFDocument(); 
+                //Write the Document in file system
+                 FileOutputStream out = new FileOutputStream(fSelected);
+        
+                //create Paragraph
+                 XWPFParagraph paragraph = document.createParagraph();
+                 paragraph.setSpacingAfterLines(1);
+                 paragraph.setSpacingBetween(pause);
+                 XWPFRun run=paragraph.createRun();
+                 run.setText(jTextArea1.getText());
+                 
+			
+                 document.write(out);
+                 out.close();
+            } catch(IOException ioe)
+            {
+                System.out.println("Error in saving docx file "+ioe);
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuItem4ActionPerformed
+
+    private void jRadioButtonMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItem3ActionPerformed
+       
+       if(jFileChooser1.showSaveDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION)
+        {
+            File fSelected = jFileChooser1.getSelectedFile();
+            try
+            {
+                try{
+    PrintWriter writer = new PrintWriter("C:\\Users\\Shubham\\Desktop\\java project Docs\\tem.txt", "UTF-8");
+    writer.println(jTextArea1.getText());
+   
+    writer.close();
+} catch (IOException e) {
+   System.out.println("Error while creating temp file for doc saving "+e);
+}
+                File f= new File("C:\\Users\\Shubham\\Desktop\\java project Docs\\tem.doc");
+                FileInputStream in = new FileInputStream(f);
+                POIFSFileSystem fs = new POIFSFileSystem(in);
+                HWPFDocument document= new HWPFDocument(fs);
+              
+                org.apache.poi.hwpf.usermodel.Range range = document.getRange();
+                
+                CharacterRun run = range.insertAfter(jTextArea1.getText());
+                
+               document.write(fSelected);
+               
+              
+            } catch(IOException ioe)
+            {
+                System.out.println("Error in saving doc file "+ioe);
+            }
+        }
+       
+       
+    }//GEN-LAST:event_jRadioButtonMenuItem3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -402,11 +534,16 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem2;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem3;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
