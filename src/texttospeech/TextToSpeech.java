@@ -36,12 +36,13 @@ public void dospeak(String speak,String  voicename)
                 voice = voices[i];    
                 break;     
             }     
-        }    
+        }   
+        System.out.println("after selecting voice");
         synthesizer.getSynthesizerProperties().setVoice(voice);    
         System.out.print("Speaking : "+speaktext);    
         synthesizer.speakPlainText(speaktext, null);    
         synthesizer.waitEngineState(Synthesizer.QUEUE_EMPTY);    
-        synthesizer.deallocate();    
+        //synthesizer.deallocate();    
     }    
     catch (Exception e)   
     {    
@@ -51,8 +52,9 @@ public void dospeak(String speak,String  voicename)
     }    
 }    
 
-public static void main(String[] args)    
+/*public static void main(String[] args)    
 {    
     TextToSpeech obj=new TextToSpeech(); obj.dospeak("this is very good place lol","kevin16");    
-}    
+}*/ 
+
 }
