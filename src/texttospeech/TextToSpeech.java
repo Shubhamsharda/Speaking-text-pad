@@ -40,7 +40,9 @@ public void dospeak(String speak,String  voicename)
         System.out.println("after selecting voice");
         synthesizer.getSynthesizerProperties().setVoice(voice);    
         System.out.print("Speaking : "+speaktext);    
-        synthesizer.speakPlainText(speaktext, null);    
+        synthesizer.speakPlainText(speaktext, null);   
+        
+        
         synthesizer.waitEngineState(Synthesizer.QUEUE_EMPTY);    
         //synthesizer.deallocate();    
     }    
@@ -50,7 +52,39 @@ public void dospeak(String speak,String  voicename)
         System.out.println(""+e);    
         System.out.println(message);    
     }    
-}    
+}
+public void speak(String text, Synthesizer synthesizer)
+{
+    System.out.print("Speaking : "+text);    
+    synthesizer.speakPlainText(text, null);
+}
+public void Pause(Synthesizer synthesizer)
+{
+    try{
+    synthesizer.pause();
+    }catch(Exception e)
+    {
+        System.out.println("Error in pausing "+e);
+    }
+}
+public void Resume(Synthesizer synthesizer)
+{
+    try{
+        synthesizer.resume();
+    }catch(Exception e)
+    {
+        System.out.println("Erro while resuming "+e);
+    }
+}
+public void Stop(Synthesizer synthesizer)
+{
+  try{
+        synthesizer.cancelAll();
+    }catch(Exception e)
+    {
+        System.out.println("Erro while stopping "+e);
+    }  
+}
 
 /*public static void main(String[] args)    
 {    
