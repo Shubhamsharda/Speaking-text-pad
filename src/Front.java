@@ -1,9 +1,18 @@
-
+import java.lang.Iterable;
+import java.util.Collections;
+import edu.mit.jwi.Dictionary;
+import edu.mit.jwi.IDictionary;
 import com.itextpdf.text.*;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
 import static com.sun.org.apache.regexp.internal.RETest.test;
+import edu.mit.jwi.item.IIndexWord;
+import edu.mit.jwi.item.ISynset;
+import edu.mit.jwi.item.IWord;
+import edu.mit.jwi.item.IWordID;
+import edu.mit.jwi.item.POS;
+import edu.mit.jwi.morph.WordnetStemmer;
 import java.awt.font.NumericShaper.Range;
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,11 +24,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.speech.Central;
 import javax.speech.synthesis.Synthesizer;
 import javax.speech.synthesis.SynthesizerModeDesc;
 import javax.speech.synthesis.Voice;
+import javax.swing.JOptionPane;
 import texttospeech.TextToSpeech;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -107,12 +122,14 @@ public class Front extends javax.swing.JFrame {
     private void initComponents() {
 
         jFileChooser1 = new javax.swing.JFileChooser();
+        jOptionPane1 = new javax.swing.JOptionPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -160,6 +177,13 @@ public class Front extends javax.swing.JFrame {
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText("Find meaning");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
             }
         });
 
@@ -260,6 +284,8 @@ public class Front extends javax.swing.JFrame {
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
@@ -277,7 +303,8 @@ public class Front extends javax.swing.JFrame {
                     .addComponent(jButton1)
                     .addComponent(jButton2)
                     .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(jButton4)
+                    .addComponent(jButton5))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -585,6 +612,88 @@ TextToSpeech obj=new TextToSpeech();
         }
     }//GEN-LAST:event_jRadioButtonMenuItem2ActionPerformed
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+      // construct the URL to the Wordnet dictionary directory
+      String wnhome = "C:\\Program Files (x86)\\WordNet\\2.1";
+      String path = wnhome + File . separator + "dict";
+      URL url= null;
+      try{
+       url = new URL("file",null, path);
+      }catch(Exception e)
+      {
+          System.out.println("Error wile creating url "+e);
+      }
+      // construct the dictionary object and open it
+      IDictionary dict = new Dictionary ( url ) ;
+        try {
+            dict.open();
+        } catch (IOException ex) {
+            Logger.getLogger(Front.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String result="";
+        System.out.println(jTextArea1.getSelectedText());
+        if(!jTextArea1.getSelectedText().isEmpty()){
+        try{
+        WordnetStemmer stemmer = new WordnetStemmer(dict);
+        java.util.List<String> stems = stemmer.findStems(jTextArea1.getSelectedText(),null);
+        //dictionarypage pg = new dictionaryPage();
+        
+        //Set<IWord> Stemwords = new HashSet<>();
+        
+        for(int i=0;i< stems.size(); i++)
+        {
+           Set<String> lexicon = new HashSet<>();
+           for(POS p : POS.values())
+           {
+               
+                IIndexWord idxWord = dict.getIndexWord(stems.get(i),p);
+                IWordID wordID = null;
+                IWord word = null;
+                if(idxWord != null)
+                {
+                   wordID = idxWord.getWordIDs().get(0);
+                   word = dict.getWord(wordID);
+                   String Glossary = word.getSynset().getGloss();
+                   Glossary = Glossary.replaceAll("\\;", "\\;\n");
+                   result = result +'\n'+ '\n'+"WORD : " + word.getLemma() + "( " + p.name() + " )" + '\n' + "GLOSSARY : " + Glossary + '\n';
+                   //Stemwords.add(word);
+                   ISynset synset = word.getSynset();
+                   for(IWord w : synset.getWords())
+                   {
+                      lexicon.add(w.getLemma());
+                   }
+                   
+          
+                
+           
+           
+                    result= result + "Synonyms of "+ word.getLemma() + "( " + p.name() + " ) are : ";
+                    for (String s : lexicon) 
+                    result = result + s + " - "; 
+                }
+            
+           
+           }//result = result + "Id = " + wordID +'\n' +"Word = " + word.getLemma() + '\n' + "Glossary = " + word.getSynset().getGloss() + '\n';
+        }
+        
+       
+        }catch(Exception e)
+        {
+            System.out.println("Error found while processing word in dictionary"+e);
+            e.printStackTrace();
+        }
+        
+        JOptionPane.showMessageDialog(this,result,"Dictionary",JOptionPane.INFORMATION_MESSAGE);
+        } else System.out.println("No selected text");
+            
+        
+        
+
+    }//GEN-LAST:event_jButton5ActionPerformed
+    /*public String ResultCalc(String txt)
+    {
+        
+    }*/
     /**
      * @param args the command line arguments
      */
@@ -627,6 +736,7 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -636,6 +746,7 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JOptionPane jOptionPane1;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem2;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem3;
