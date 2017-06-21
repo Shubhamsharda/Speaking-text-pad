@@ -1,10 +1,17 @@
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
+import static com.sun.org.apache.regexp.internal.RETest.test;
 import java.awt.font.NumericShaper.Range;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -16,7 +23,14 @@ import javax.speech.synthesis.Voice;
 import texttospeech.TextToSpeech;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import static jdk.nashorn.internal.objects.NativeRegExp.test;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
@@ -187,6 +201,11 @@ public class Front extends javax.swing.JFrame {
 
         jRadioButtonMenuItem2.setSelected(true);
         jRadioButtonMenuItem2.setText("Pdf File");
+        jRadioButtonMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jRadioButtonMenuItem2);
 
         jRadioButtonMenuItem3.setSelected(true);
@@ -490,6 +509,82 @@ TextToSpeech obj=new TextToSpeech();
        
     }//GEN-LAST:event_jRadioButtonMenuItem3ActionPerformed
 
+    private void jRadioButtonMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItem2ActionPerformed
+        // TODO add your handling code here:
+        if(jFileChooser1.showSaveDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION)
+        {
+            File fSelected = jFileChooser1.getSelectedFile();
+            try
+            {
+                /*StringBuilder b = new StringBuilder();                        //Trying to remove unsupported characters by using contains function
+                String text = jTextArea1.getText();                           //of WinAnsiEncoding class and saving the modifid text in b.
+                for (int i = 0; i < text.length(); i++) {
+            if (WinAnsiEncoding.INSTANCE.contains(text.charAt(i))) {
+                b.append(text.charAt(i));
+                if(text.charAt(i) == '.')
+                {
+                    b.append('\n');
+                }
+
+            }
+            }
+               // System.out.println("value of b is: " + b.toString());
+                String text = jTextArea1.getText();
+                String[] s = new String[50];
+                for(int j=0;j<50;j++)
+                {
+                for (int i = 0; i < text.length(); i++){
+                    if(text.charAt(i) == '.')
+                    {
+                        
+                    }
+                 }
+                }
+                PDDocument doc = new PDDocument();
+                PDPage page = new PDPage();
+                doc.addPage(page);
+                PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
+                contentStream.newLineAtOffset(15,670);
+                contentStream.setRenderingMode(RenderingMode.FILL);
+                contentStream.showText(b.toString()); 
+                contentStream.endText();
+                System.out.println("Content added");
+                //Closing the content stream
+                contentStream.close();
+                doc.save(fSelected);
+                doc.close();*/
+             Document pdfDoc = new Document(PageSize.A4);
+             PdfWriter.getInstance(pdfDoc, new FileOutputStream(fSelected)).setPdfVersion(PdfWriter.VERSION_1_7);
+             pdfDoc.open();
+             BaseFont courier = BaseFont.createFont(BaseFont.COURIER, BaseFont.CP1252, BaseFont.EMBEDDED);
+             Font myfont = new Font(courier);
+             myfont.setStyle(Font.NORMAL);
+             myfont.setSize(11);
+             pdfDoc.add(new Paragraph("\n"));
+             String[] lines = jTextArea1.getText().split(System.getProperty("line.separator"));
+             int size = lines.length;
+             for(int i=0; i < size ; i++ )
+             {
+                 Paragraph para = new Paragraph(lines[i]+"\n", myfont);
+                 para.setAlignment(Element.ALIGN_JUSTIFIED);
+                 pdfDoc.add(para);
+                 
+             }
+             pdfDoc.close();
+            } catch(IOException ioe)
+            {
+                System.out.println("Error in pdf saving file "+ioe);
+            }
+            catch(Exception e)
+            {
+                System.out.println("Error while saving pdf file "+e);
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuItem2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -500,6 +595,7 @@ TextToSpeech obj=new TextToSpeech();
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
+        BasicConfigurator.configure();
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
