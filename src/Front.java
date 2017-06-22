@@ -13,6 +13,7 @@ import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.IWordID;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.morph.WordnetStemmer;
+import java.awt.Color;
 import java.awt.font.NumericShaper.Range;
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Locale;
@@ -35,9 +37,14 @@ import javax.speech.synthesis.Synthesizer;
 import javax.speech.synthesis.SynthesizerModeDesc;
 import javax.speech.synthesis.Voice;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import texttospeech.TextToSpeech;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 import static jdk.nashorn.internal.objects.NativeRegExp.test;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -76,6 +83,56 @@ public class Front extends javax.swing.JFrame {
         initComponents();
         initSE();
     }
+   /* class MyHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter
+    {
+        public MyHighlightPainter(Color color)
+        {
+            super(color);
+        }   
+        
+    }
+    
+    Highlighter.HighlightPainter myHighlightPainter =  new MyHighlightPainter(Color.red);
+    */
+    DefaultHighlightPainter myHighlightPainter = new DefaultHighlightPainter(Color.red);
+       /* public void removeHighlights(JTextArea textComp)
+        {
+            Highlighter hilite = textComp.getHighlighter();
+            //Highlighter.Highlight[] hilites = hilite.getHighlights();
+            for(int i=0;i<hilites.length; i++){
+               if(hilites[i].getPainter() instanceof MyHighlightPainter )
+               {
+                   hilite.removeHighlight(hilites[i]);
+               } 
+            }
+            hilite.removeAllHighlights();
+        }*/
+        public void highlight(JTextArea textComp, String pattern )
+        {
+            Highlighter hilite = textComp.getHighlighter();
+            hilite.removeAllHighlights();
+            //removeHighlights(textComp);
+            try{
+                //hilite = textComp.getHighlighter();
+                javax.swing.text.Document doc = textComp.getDocument();
+                String text = doc.getText(0,doc.getLength());
+                int pos = 0;
+                while((pos=text.toUpperCase().indexOf(pattern.toUpperCase(),pos))>=0)
+                {
+                    hilite.addHighlight(pos, pos+pattern.length(), myHighlightPainter);
+                    pos +=pattern.length();
+                }
+                if(hilite.getHighlights().length == 0)
+                {
+                    JOptionPane.showMessageDialog(this,"No such phrase found!","Nothing Found",JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            catch(Exception e)
+            {
+                System.out.println("error in highlighting"+e);
+                
+            }
+        }
   public void initSE()
   {
       String voiceName ="kevin16";    
@@ -130,6 +187,8 @@ public class Front extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -184,6 +243,13 @@ public class Front extends javax.swing.JFrame {
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton6.setText("Search");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
             }
         });
 
@@ -284,6 +350,10 @@ public class Front extends javax.swing.JFrame {
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
@@ -304,7 +374,9 @@ public class Front extends javax.swing.JFrame {
                     .addComponent(jButton2)
                     .addComponent(jButton3)
                     .addComponent(jButton4)
-                    .addComponent(jButton5))
+                    .addComponent(jButton5)
+                    .addComponent(jButton6)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -614,12 +686,13 @@ TextToSpeech obj=new TextToSpeech();
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
       // construct the URL to the Wordnet dictionary directory
+      try{
       String wnhome = "C:\\Program Files (x86)\\WordNet\\2.1";
-      String path = wnhome + File . separator + "dict";
-      URL url= null;
+      String path = wnhome + File.separator + "dict";
+      URL url=null;
       try{
        url = new URL("file",null, path);
-      }catch(Exception e)
+      }catch(MalformedURLException e)
       {
           System.out.println("Error wile creating url "+e);
       }
@@ -632,7 +705,8 @@ TextToSpeech obj=new TextToSpeech();
         }
         String result="";
         System.out.println(jTextArea1.getSelectedText());
-        if(!jTextArea1.getSelectedText().isEmpty()){
+        if(!(jTextArea1.getSelectedText() == null)){
+            System.out.println("Text is selected. Text not empty");   //for debugging purpose.
         try{
         WordnetStemmer stemmer = new WordnetStemmer(dict);
         java.util.List<String> stems = stemmer.findStems(jTextArea1.getSelectedText(),null);
@@ -667,7 +741,7 @@ TextToSpeech obj=new TextToSpeech();
                 
            
            
-                    result= result + "Synonyms of "+ word.getLemma() + "( " + p.name() + " ) are : ";
+                    result= result + "SYNONYMS of "+ word.getLemma() + "( " + p.name() + " ) are : ";
                     for (String s : lexicon) 
                     result = result + s + " - "; 
                 }
@@ -682,14 +756,42 @@ TextToSpeech obj=new TextToSpeech();
             System.out.println("Error found while processing word in dictionary"+e);
             e.printStackTrace();
         }
-        
+        if(result.equals("")){ JOptionPane.showMessageDialog(this,"No such word found","Dictionary",JOptionPane.INFORMATION_MESSAGE); }
+        else
         JOptionPane.showMessageDialog(this,result,"Dictionary",JOptionPane.INFORMATION_MESSAGE);
-        } else System.out.println("No selected text");
-            
+        } else
+        {
+            System.out.println("No selected text");
+            JOptionPane.showMessageDialog(this,"No Word Selected \nSelect a word to find its meaning. \n Double clicka word for selection","Dictionary",JOptionPane.INFORMATION_MESSAGE);
+        }
         
-        
+      }catch(NullPointerException e)
+      {
+          System.out.println("Exception occured "+ e);
+          e.printStackTrace();
+      }
 
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+         if((jTextField1.getText() == null))
+         {
+           JOptionPane.showMessageDialog(this,"Enter words to search first!","Error",JOptionPane.ERROR_MESSAGE);
+           
+         }
+         else if(jTextField1.getText().equals(""))
+           {
+               JOptionPane.showMessageDialog(this,"Enter words to search first!","Error",JOptionPane.ERROR_MESSAGE);
+               Highlighter hilite = jTextArea1.getHighlighter();
+               hilite.removeAllHighlights();
+           }
+         else
+         highlight(jTextArea1,jTextField1.getText());
+         System.out.println("Inside if");
+        
+            
+        
+    }//GEN-LAST:event_jButton6ActionPerformed
     /*public String ResultCalc(String txt)
     {
         
@@ -737,6 +839,7 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -753,5 +856,6 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
