@@ -1,3 +1,7 @@
+import javax.swing.*;
+import javax.swing.SwingWorker;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.Iterable;
 import java.util.Collections;
 import edu.mit.jwi.Dictionary;
@@ -30,14 +34,20 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
 import javax.speech.Central;
 import javax.speech.synthesis.Synthesizer;
 import javax.speech.synthesis.SynthesizerModeDesc;
 import javax.speech.synthesis.Voice;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker.StateValue;
+import static javax.swing.SwingWorker.StateValue.DONE;
 import texttospeech.TextToSpeech;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -82,6 +92,10 @@ public class Front extends javax.swing.JFrame {
     public Front() {
         initComponents();
         initSE();
+        jProgressBar2.setMinimum(0);
+        jProgressBar2.setMaximum(100);
+        jProgressBar2.setVisible(false);
+        
     }
    /* class MyHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter
     {
@@ -94,7 +108,7 @@ public class Front extends javax.swing.JFrame {
     
     Highlighter.HighlightPainter myHighlightPainter =  new MyHighlightPainter(Color.red);
     */
-    DefaultHighlightPainter myHighlightPainter = new DefaultHighlightPainter(Color.red);
+    
        /* public void removeHighlights(JTextArea textComp)
         {
             Highlighter hilite = textComp.getHighlighter();
@@ -107,32 +121,8 @@ public class Front extends javax.swing.JFrame {
             }
             hilite.removeAllHighlights();
         }*/
-        public void highlight(JTextArea textComp, String pattern )
-        {
-            Highlighter hilite = textComp.getHighlighter();
-            hilite.removeAllHighlights();
-            //removeHighlights(textComp);
-            try{
-                //hilite = textComp.getHighlighter();
-                javax.swing.text.Document doc = textComp.getDocument();
-                String text = doc.getText(0,doc.getLength());
-                int pos = 0;
-                while((pos=text.toUpperCase().indexOf(pattern.toUpperCase(),pos))>=0)
-                {
-                    hilite.addHighlight(pos, pos+pattern.length(), myHighlightPainter);
-                    pos +=pattern.length();
-                }
-                if(hilite.getHighlights().length == 0)
-                {
-                    JOptionPane.showMessageDialog(this,"No such phrase found!","Nothing Found",JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            catch(Exception e)
-            {
-                System.out.println("error in highlighting"+e);
-                
-            }
-        }
+        
+        
   public void initSE()
   {
       String voiceName ="kevin16";    
@@ -169,6 +159,7 @@ public class Front extends javax.swing.JFrame {
         System.out.println(message);    
     }    
   }
+ 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -180,6 +171,10 @@ public class Front extends javax.swing.JFrame {
 
         jFileChooser1 = new javax.swing.JFileChooser();
         jOptionPane1 = new javax.swing.JOptionPane();
+        jDialog1 = new javax.swing.JDialog();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
@@ -189,6 +184,7 @@ public class Front extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
+        jProgressBar2 = new javax.swing.JProgressBar();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -202,6 +198,53 @@ public class Front extends javax.swing.JFrame {
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
+        jDialog1.setMinimumSize(new java.awt.Dimension(200, 100));
+        jDialog1.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                jDialog1ComponentHidden(evt);
+            }
+        });
+
+        jLabel3.setText("Please wait....");
+        jLabel3.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+
+        jProgressBar1.setMinimumSize(new java.awt.Dimension(284, 100));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(101, 101, 101)
+                        .addComponent(jLabel3))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(76, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addGap(18, 18, 18)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(43, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+        jDialog1.getContentPane().setLayout(jDialog1Layout);
+        jDialog1Layout.setHorizontalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jDialog1Layout.setVerticalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jTextArea1.setColumns(20);
@@ -210,6 +253,7 @@ public class Front extends javax.swing.JFrame {
 
         jButton1.setMnemonic('p');
         jButton1.setText("Play");
+        jButton1.setToolTipText("Systhesize speech and play it for text in text area.");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -218,6 +262,7 @@ public class Front extends javax.swing.JFrame {
 
         jButton2.setMnemonic('a');
         jButton2.setText("pause");
+        jButton2.setToolTipText("Pause speech");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -226,6 +271,7 @@ public class Front extends javax.swing.JFrame {
 
         jButton3.setMnemonic('r');
         jButton3.setText("Resume");
+        jButton3.setToolTipText("Resume speech after pausing..");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -233,6 +279,7 @@ public class Front extends javax.swing.JFrame {
         });
 
         jButton4.setText("Stop");
+        jButton4.setToolTipText("Stop speech synthesis");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
@@ -240,6 +287,7 @@ public class Front extends javax.swing.JFrame {
         });
 
         jButton5.setText("Find meaning");
+        jButton5.setToolTipText("Use WordNet dictionary for the selected text in text area.");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -247,11 +295,14 @@ public class Front extends javax.swing.JFrame {
         });
 
         jButton6.setText("Search");
+        jButton6.setToolTipText("Search for words or phrase in the text area.");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
             }
         });
+
+        jTextField1.setToolTipText("Enter word or phrase for searching");
 
         jMenu1.setText("File");
         jMenu1.addActionListener(new java.awt.event.ActionListener() {
@@ -262,6 +313,7 @@ public class Front extends javax.swing.JFrame {
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem1.setText("New");
+        jMenuItem1.setToolTipText("create new text file");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
@@ -271,6 +323,7 @@ public class Front extends javax.swing.JFrame {
 
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem2.setText("Open");
+        jMenuItem2.setToolTipText("Open files from your directory");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem2ActionPerformed(evt);
@@ -320,6 +373,7 @@ public class Front extends javax.swing.JFrame {
 
         jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem3.setText("Save As");
+        jMenuItem3.setToolTipText("save your file");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem3ActionPerformed(evt);
@@ -329,6 +383,7 @@ public class Front extends javax.swing.JFrame {
 
         jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem4.setText("Exit");
+        jMenuItem4.setToolTipText("exit this application");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem4ActionPerformed(evt);
@@ -350,17 +405,20 @@ public class Front extends javax.swing.JFrame {
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jProgressBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton4)
                 .addContainerGap())
@@ -368,7 +426,9 @@ public class Front extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 39, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
@@ -378,7 +438,7 @@ public class Front extends javax.swing.JFrame {
                     .addComponent(jButton6)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -772,12 +832,15 @@ TextToSpeech obj=new TextToSpeech();
       }
 
     }//GEN-LAST:event_jButton5ActionPerformed
-
+    
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+          
+         
          if((jTextField1.getText() == null))
          {
            JOptionPane.showMessageDialog(this,"Enter words to search first!","Error",JOptionPane.ERROR_MESSAGE);
-           
+           Highlighter hilite = jTextArea1.getHighlighter();
+           hilite.removeAllHighlights();
          }
          else if(jTextField1.getText().equals(""))
            {
@@ -785,13 +848,91 @@ TextToSpeech obj=new TextToSpeech();
                Highlighter hilite = jTextArea1.getHighlighter();
                hilite.removeAllHighlights();
            }
-         else
-         highlight(jTextArea1,jTextField1.getText());
-         System.out.println("Inside if");
-        
-            
-        
+         else{
+             
+         /* javax.swing.SwingWorker<Void,Void> mySwingWorker;
+             mySwingWorker = new javax.swing.SwingWorker<Void , Void>() {
+                 @Override
+                 protected Void doInBackground() throws Exception {
+                     highlight(jTextArea1,jTextField1.getText());
+                     //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                     return null;
+                 }
+             };
+          mySwingWorker.addPropertyChangeListener(new PropertyChangeListener() {
+
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+            if (evt.getPropertyName().equals("state")) {
+               if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
+                  jDialog1.dispose();
+               }
+            }
+         }
+         });
+          mySwingWorker.execute();
+          jProgressBar1.setIndeterminate(true);
+         // jProgressBar1
+          jDialog1.setTitle("Processing");
+          jDialog1.setLocation(200, 200);
+          jDialog1.setVisible(true);
+          
+         
+         //System.out.println("Inside if");
+         //jDialog1.setVisible(false);
+         }
+         
+         
+           
+         */
+         jProgressBar2.setVisible(true);
+         SearchForWordWorker searchWorker = new SearchForWordWorker(jTextArea1,jTextField1.getText(),this.jButton6);
+         searchWorker.addPropertyChangeListener(new PropertyChangeListener() {
+      @Override
+              public void propertyChange(final PropertyChangeEvent event) {
+               switch (event.getPropertyName()) {
+              case "progress":
+               jProgressBar2.setIndeterminate(false);
+               jProgressBar2.setValue((Integer) event.getNewValue());
+               break;
+              case "state":
+               switch ((StateValue) event.getNewValue()) {
+                case DONE:
+                jProgressBar2.setVisible(false);
+                //jProgressBar2.putValue(Action.NAME, "Search");
+                 try {
+                 final int count = searchWorker.get();
+                 JOptionPane.showMessageDialog(jButton6, "Found: " + count + " words", "Search Words",
+                  JOptionPane.INFORMATION_MESSAGE);
+            } catch (final CancellationException e) {
+              JOptionPane.showMessageDialog(jButton6, "The search process was cancelled", "Search Words",
+                  JOptionPane.WARNING_MESSAGE);
+            } catch (final Exception e) {
+              JOptionPane.showMessageDialog(jButton6, "The search process failed", "Search Words",
+                  JOptionPane.ERROR_MESSAGE);
+            }
+
+            //searchWorker = null;
+               
+            break;
+          case STARTED:
+          case PENDING:
+            //searchCancelAction.putValue(Action.NAME, "Cancel");
+            jProgressBar2.setVisible(true);
+            jProgressBar2.setIndeterminate(true);
+            break;
+          }
+          break;
+        }
+      }
+    });
+    searchWorker.execute();
+         }   
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jDialog1ComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jDialog1ComponentHidden
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jDialog1ComponentHidden
     /*public String ResultCalc(String txt)
     {
         
@@ -840,7 +981,9 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JDialog jDialog1;
     private javax.swing.JFileChooser jFileChooser1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -850,6 +993,9 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JOptionPane jOptionPane1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JProgressBar jProgressBar2;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem2;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem3;
