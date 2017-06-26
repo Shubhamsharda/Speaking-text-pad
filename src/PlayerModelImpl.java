@@ -34,7 +34,8 @@ import javax.swing.ListModel;
  */
 
 public class PlayerModelImpl {
-    
+    public enum queue{};
+    queue q;
     private Synthesizer synthesizer;
     private DefaultComboBoxModel synthesizerList;
     private DefaultComboBoxModel voiceList;
@@ -92,10 +93,20 @@ public class PlayerModelImpl {
 	return paused;
     }
     
-    public void speak(String text)
+    public void speak(String text) throws InterruptedException
 {
-    System.out.print("Speaking : "+text);    
+    
+   // Enumeration e = synthesizer.enumerateQueue();
+    //while(e.hasMoreElements())
+    //{
+   //     System.out.println(e.nextElement().toString());    
+    //}
+    stopped = false;
+    synthesizer.waitEngineState(Synthesizer.QUEUE_EMPTY);
+    System.out.println("waiting for queue to be empty");
     synthesizer.speakPlainText(text, null);
+    System.out.println("Speaking : "+text);
+    
 }
 
     /**
@@ -125,7 +136,7 @@ public class PlayerModelImpl {
      */
     public synchronized void stop() {
 	
-	    stopped = true;
+	stopped = true;
 	
 	synthesizer.cancelAll();
     }
@@ -136,6 +147,10 @@ public class PlayerModelImpl {
      */
     public void cancel() {
 	synthesizer.cancel();
+    }
+    public synchronized void setStopped(Boolean b)
+    {
+        stopped = b;
     }
     /**
      * Close this playable
@@ -155,7 +170,7 @@ public class PlayerModelImpl {
      *
      * @return true if the Player is currently being stopped; false otherwise
      */    
-    private synchronized boolean isStopped() {
+    public synchronized boolean isStopped() {
 	return stopped;
     }
     

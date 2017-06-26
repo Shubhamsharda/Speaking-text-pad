@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.BreakIterator;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -52,6 +53,7 @@ import static javax.swing.SwingWorker.StateValue.DONE;
 import texttospeech.TextToSpeech;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter;
@@ -228,7 +230,6 @@ public class Front extends javax.swing.JFrame {
         jRadioButtonMenuItem2 = new javax.swing.JRadioButtonMenuItem();
         jRadioButtonMenuItem3 = new javax.swing.JRadioButtonMenuItem();
         jRadioButtonMenuItem4 = new javax.swing.JRadioButtonMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
@@ -280,6 +281,7 @@ public class Front extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Text to Speech Player");
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -537,7 +539,7 @@ public class Front extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem2);
 
-        jMenu3.setText("jMenu3");
+        jMenu3.setText("Save As");
 
         jRadioButtonMenuItem1.setSelected(true);
         jRadioButtonMenuItem1.setText("Text File");
@@ -577,16 +579,6 @@ public class Front extends javax.swing.JFrame {
 
         jMenu1.add(jMenu3);
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem3.setText("Save As");
-        jMenuItem3.setToolTipText("save your file");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem3);
-
         jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem4.setText("Exit");
         jMenuItem4.setToolTipText("exit this application");
@@ -610,7 +602,7 @@ public class Front extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 246, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -631,7 +623,7 @@ public class Front extends javax.swing.JFrame {
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(109, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
@@ -675,7 +667,105 @@ public class Front extends javax.swing.JFrame {
 TextToSpeech obj=new TextToSpeech();
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-         playerModelImpl.speak(jTextArea1.getText());
+        Highlighter hilite = jTextArea1.getHighlighter();
+        DefaultHighlighter.DefaultHighlightPainter myHighlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+        if(!(jTextArea1.getSelectedText() == null))
+        {
+             //String[] sentences = jTextArea1.getSelectedText().split("(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?)\\s");
+            /*String[] sentences = jTextArea1.getSelectedText().split("\\.");
+             for(String s : sentences)
+            {
+                playerModelImpl.speak(s);
+            }*/
+            //playerModelImpl.speak(jTextArea1.getSelectedText());
+            System.out.println("isStopped() :  " + playerModelImpl.isStopped());
+            System.out.println("Outputting selected text");
+            playerModelImpl.setStopped(false);
+            //DefaultHighlighter.DefaultHighlightPainter myHighlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+           // BreakIterator bi = BreakIterator.getSentenceInstance(Locale.ENGLISH);
+            //bi.setText(jTextArea1.getSelectedText());
+           // int start=0;
+            //int end = 0;
+            SpeakingTextWordWorker speakingTextWordWorker = new SpeakingTextWordWorker(playerModelImpl, jTextArea1);
+            
+            //while ((end = bi.next()) != BreakIterator.DONE) 
+            //{
+                //hilite.removeAllHighlights();
+                /* try
+                {
+                //hilite.removeAllHighlights();
+                hilite.addHighlight(jTextArea1.getSelectionStart()+start,jTextArea1.getSelectionStart()+end, myHighlightPainter);
+                } catch (BadLocationException ex) 
+                {
+                Logger.getLogger(Front.class.getName()).log(Level.SEVERE, null, ex);
+                }*/
+                //System.out.println("start before speaking: " +start);
+                //System.out.println("end before speaking : " +end);
+                //speakingTextWordWorker.setText(jTextArea1.getSelectedText().substring(start, end));
+                    speakingTextWordWorker.addPropertyChangeListener(new PropertyChangeListener() {
+      @Override
+              public void propertyChange(final PropertyChangeEvent event) {
+               switch (event.getPropertyName()) {
+              case "state":
+                  switch ((StateValue) event.getNewValue()) {
+                    case DONE:
+                        hilite.removeAllHighlights();
+                     int beginIndex=jTextArea1.getSelectedText().lastIndexOf('.');
+                  
+                     int lastIndex = jTextArea1.getSelectedText().length();
+                     if(jTextArea1.getSelectedText().endsWith(".") || jTextArea1.getSelectedText().endsWith(". ")||jTextArea1.getSelectedText().endsWith("\n")||jTextArea1.getSelectedText().endsWith(" "))
+                     {
+                         System.out.println("inside if");
+                         String sub = jTextArea1.getSelectedText().substring(0,jTextArea1.getSelectedText().length()-4);
+                         int newBeginIndex = sub.lastIndexOf('.');
+                         int newEndIndex = sub.length();
+                       try {
+                           hilite.addHighlight(newBeginIndex+1, newEndIndex,myHighlightPainter );
+                           } catch (BadLocationException ex) {
+                                  Logger.getLogger(Front.class.getName()).log(Level.SEVERE, null, ex);
+                              }
+                     }
+                     else
+                     {
+                         System.out.println("Inside else");
+                        try {
+                        hilite.addHighlight(beginIndex+1, lastIndex,myHighlightPainter );
+                           } catch (BadLocationException ex) {
+                       Logger.getLogger(Front.class.getName()).log(Level.SEVERE, null, ex);
+                          } 
+                     }
+               
+                   
+               
+                     break;
+                    }
+                break;
+              }
+      }
+    });
+                speakingTextWordWorker.execute();
+                System.out.println("Created and executed speakingtext swingworker");
+ 
+        }else
+        {
+            //String[] sentences = jTextArea1.getText().split("(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?)"); //regex to split paras into sentences.
+            //String[] sentences = jTextArea1.getText().split("(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?)(\\s|[A-Z].*)");
+            hilite.removeAllHighlights();
+            String[] sentences = jTextArea1.getText().split("\\.");
+            System.out.println("Text not selected, playing whole text");
+            for(String s : sentences)
+            {
+                
+                try {
+                    playerModelImpl.speak(s);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Front.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+        }
+        
+         
           //obj.speak(jTextArea1.getText(), synthesizer);
           
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -695,27 +785,10 @@ TextToSpeech obj=new TextToSpeech();
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         playerModelImpl.stop();
+        Highlighter hilite = jTextArea1.getHighlighter();
+        hilite.removeAllHighlights();
         //obj.Stop(synthesizer);
     }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
-        FileFilter ft = new FileNameExtensionFilter("Text Files", "txt");
-        jFileChooser1.addChoosableFileFilter(ft);
-        if(jFileChooser1.showSaveDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION)
-        {
-            File fSelected = jFileChooser1.getSelectedFile();
-            try
-            {
-                FileWriter out = new FileWriter(fSelected);
-                jTextArea1.write(out);
-                out.close();
-            } catch(IOException ioe)
-            {
-                System.out.println("Error in saving file "+ioe);
-            }
-        }
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
@@ -1295,7 +1368,6 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JOptionPane jOptionPane1;
     private javax.swing.JPanel jPanel1;
