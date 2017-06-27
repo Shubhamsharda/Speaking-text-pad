@@ -19,6 +19,8 @@ import edu.mit.jwi.item.POS;
 import edu.mit.jwi.morph.WordnetStemmer;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.font.NumericShaper.Range;
 import java.io.BufferedReader;
 import java.io.File;
@@ -75,6 +77,7 @@ import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import java.util.Date;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -89,6 +92,12 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 public class Front extends javax.swing.JFrame {
     PlayerModelImpl playerModelImpl;
     private int initialVolume = 10;
+    public int lastIndex;
+    FontChooser fontDialog;
+    JDialog foregroundDialog=null;
+    JColorChooser fcolorChooser=null;
+    JColorChooser bcolorChooser=null;
+    JDialog backgroundDialog=null;
 
     /**
      * Creates new form Front
@@ -99,6 +108,7 @@ public class Front extends javax.swing.JFrame {
         initComponents();
         //initSE();
         jProgressBar2.setMinimum(0);
+        jMenuItem3.setEnabled(false);
         jProgressBar2.setMaximum(100);
         jProgressBar2.setVisible(false);
         playerModelImpl = new PlayerModelImpl();
@@ -195,6 +205,21 @@ public class Front extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jProgressBar1 = new javax.swing.JProgressBar();
+        FindDialog = new javax.swing.JDialog();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        replaceLabel = new javax.swing.JLabel();
+        findWhat = new javax.swing.JTextField();
+        replaceWith = new javax.swing.JTextField();
+        findNextButton = new javax.swing.JButton();
+        replaceButton = new javax.swing.JButton();
+        replaceAllButton = new javax.swing.JButton();
+        jButton11 = new javax.swing.JButton();
+        matchCase = new javax.swing.JCheckBox();
+        jLabel10 = new javax.swing.JLabel();
+        jPanel7 = new javax.swing.JPanel();
+        up = new javax.swing.JRadioButton();
+        down = new javax.swing.JRadioButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
@@ -221,6 +246,7 @@ public class Front extends javax.swing.JFrame {
         voiceComboBox = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        statusBar = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -232,6 +258,26 @@ public class Front extends javax.swing.JFrame {
         jRadioButtonMenuItem4 = new javax.swing.JRadioButtonMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem10 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
+        jMenuItem12 = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem13 = new javax.swing.JMenuItem();
+        jMenuItem14 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
+        jMenuItem15 = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        formatBackground = new javax.swing.JMenuItem();
+        jMenuItem17 = new javax.swing.JMenuItem();
 
         jDialog1.setMinimumSize(new java.awt.Dimension(200, 100));
         jDialog1.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -280,11 +326,172 @@ public class Front extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
+        jPanel5.setMinimumSize(new java.awt.Dimension(200, 200));
+
+        jLabel8.setText("Find What");
+
+        replaceLabel.setText("Replace With");
+
+        findWhat.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                findWhatFocusLost(evt);
+            }
+        });
+        findWhat.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                findWhatInputMethodTextChanged(evt);
+            }
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
+        findWhat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                findWhatActionPerformed(evt);
+            }
+        });
+
+        findNextButton.setText("Find Next");
+        findNextButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                findNextButtonActionPerformed(evt);
+            }
+        });
+
+        replaceButton.setText("Replace");
+        replaceButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                replaceButtonActionPerformed(evt);
+            }
+        });
+
+        replaceAllButton.setText("Replace All");
+        replaceAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                replaceAllButtonActionPerformed(evt);
+            }
+        });
+
+        jButton11.setText("Cancel");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
+
+        matchCase.setText("Match case");
+
+        jLabel10.setText("Direction:");
+
+        up.setText("up");
+
+        down.setText("down");
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(up)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(down)
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(up)
+                    .addComponent(down))
+                .addContainerGap(27, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(replaceLabel)
+                            .addComponent(jLabel8))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(findWhat, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
+                            .addComponent(replaceWith))
+                        .addGap(40, 40, 40))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(matchCase)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(replaceAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                    .addComponent(replaceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(findNextButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(45, 45, 45))
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(98, 98, 98)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel10)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(findWhat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(findNextButton))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(replaceLabel)
+                            .addComponent(replaceWith, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(replaceButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(replaceAllButton)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton11)
+                    .addComponent(matchCase))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46))
+        );
+
+        javax.swing.GroupLayout FindDialogLayout = new javax.swing.GroupLayout(FindDialog.getContentPane());
+        FindDialog.getContentPane().setLayout(FindDialogLayout);
+        FindDialogLayout.setHorizontalGroup(
+            FindDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        FindDialogLayout.setVerticalGroup(
+            FindDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(FindDialogLayout.createSequentialGroup()
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(0, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Text to Speech Player");
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
+        jTextArea1.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                jTextArea1CaretUpdate(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTextArea1);
 
         jButton1.setMnemonic('p');
@@ -505,12 +712,14 @@ public class Front extends javax.swing.JFrame {
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(synthesizerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 81, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
                 .addComponent(jLabel7)
                 .addGap(18, 18, 18)
                 .addComponent(voiceComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(71, 71, 71))
         );
+
+        statusBar.setText("||       Ln 0, Col 0");
 
         jMenu1.setText("File");
         jMenu1.addActionListener(new java.awt.event.ActionListener() {
@@ -592,7 +801,143 @@ public class Front extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
+        jMenu2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenu2ActionPerformed(evt);
+            }
+        });
+
+        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem3.setText("Undo");
+        jMenu2.add(jMenuItem3);
+        jMenu2.add(jSeparator1);
+
+        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem5.setText("Cut");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem5);
+
+        jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem6.setText("Copy");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem6);
+
+        jMenuItem7.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem7.setText("Paste");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem7);
+
+        jMenuItem8.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+        jMenuItem8.setText("Delete");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem8);
+        jMenu2.add(jSeparator2);
+
+        jMenuItem9.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem9.setText("Find");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem9ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem9);
+
+        jMenuItem10.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
+        jMenuItem10.setText("FindNext");
+        jMenu2.add(jMenuItem10);
+
+        jMenuItem11.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem11.setText("Replace");
+        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem11ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem11);
+
+        jMenuItem12.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem12.setText("Go to..");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem12ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem12);
+        jMenu2.add(jSeparator3);
+
+        jMenuItem13.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem13.setText("Select All");
+        jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem13ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem13);
+
+        jMenuItem14.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
+        jMenuItem14.setText("Time/Date");
+        jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem14ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem14);
+
         jMenuBar1.add(jMenu2);
+
+        jMenu4.setText("Format");
+
+        jCheckBoxMenuItem1.setSelected(true);
+        jCheckBoxMenuItem1.setText("Word Wrap");
+        jCheckBoxMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jCheckBoxMenuItem1);
+
+        jMenuItem15.setText("Font...");
+        jMenuItem15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem15ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem15);
+        jMenu4.add(jSeparator4);
+
+        formatBackground.setText("Set Text color");
+        formatBackground.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                formatBackgroundActionPerformed(evt);
+            }
+        });
+        jMenu4.add(formatBackground);
+
+        jMenuItem17.setText("Set Pad color");
+        jMenuItem17.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem17ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem17);
+
+        jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
 
@@ -601,65 +946,64 @@ public class Front extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 246, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(74, 74, 74)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addContainerGap()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton5)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton7))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(statusBar))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 687, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11)))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6)
-                    .addComponent(jButton5)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4)
-                    .addComponent(jButton7))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton6)
+                        .addComponent(jButton5)
+                        .addComponent(jButton1)
+                        .addComponent(jButton2)
+                        .addComponent(jButton3)
+                        .addComponent(jButton4)
+                        .addComponent(jButton7)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(statusBar))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -702,47 +1046,46 @@ TextToSpeech obj=new TextToSpeech();
                 //System.out.println("start before speaking: " +start);
                 //System.out.println("end before speaking : " +end);
                 //speakingTextWordWorker.setText(jTextArea1.getSelectedText().substring(start, end));
-                    speakingTextWordWorker.addPropertyChangeListener(new PropertyChangeListener() {
+                    /*speakingTextWordWorker.addPropertyChangeListener(new PropertyChangeListener() {
       @Override
               public void propertyChange(final PropertyChangeEvent event) {
                switch (event.getPropertyName()) {
               case "state":
                   switch ((StateValue) event.getNewValue()) {
                     case DONE:
-                        hilite.removeAllHighlights();
-                     int beginIndex=jTextArea1.getSelectedText().lastIndexOf('.');
-                  
-                     int lastIndex = jTextArea1.getSelectedText().length();
-                     if(jTextArea1.getSelectedText().endsWith(".") || jTextArea1.getSelectedText().endsWith(". ")||jTextArea1.getSelectedText().endsWith("\n")||jTextArea1.getSelectedText().endsWith(" "))
-                     {
-                         System.out.println("inside if");
-                         String sub = jTextArea1.getSelectedText().substring(0,jTextArea1.getSelectedText().length()-4);
-                         int newBeginIndex = sub.lastIndexOf('.');
-                         int newEndIndex = sub.length();
-                       try {
-                           hilite.addHighlight(newBeginIndex+1, newEndIndex,myHighlightPainter );
-                           } catch (BadLocationException ex) {
-                                  Logger.getLogger(Front.class.getName()).log(Level.SEVERE, null, ex);
-                              }
-                     }
-                     else
-                     {
-                         System.out.println("Inside else");
-                        try {
-                        hilite.addHighlight(beginIndex+1, lastIndex,myHighlightPainter );
-                           } catch (BadLocationException ex) {
+                              hilite.removeAllHighlights();
+                              int beginIndex=jTextArea1.getSelectedText().lastIndexOf('.');
+                              int lastIndex = jTextArea1.getSelectedText().length();
+                              System.out.println("BeginIndex: " + beginIndex+ " lastIndex : "+lastIndex );
+
+                              if(jTextArea1.getSelectedText().endsWith(".") || jTextArea1.getSelectedText().endsWith(". ")||jTextArea1.getSelectedText().endsWith("\n")||jTextArea1.getSelectedText().endsWith(" "))
+                              {
+                                System.out.println("inside if");
+                                String sub = jTextArea1.getSelectedText().substring(0,jTextArea1.getSelectedText().length()-4);
+                                int newBeginIndex = sub.lastIndexOf('.');
+                                int newEndIndex = sub.length();
+                                System.out.println("neBeginIndex: " + newBeginIndex+ " newEndIndex : "+newEndIndex );
+                                try {
+                                      hilite.addHighlight(newBeginIndex+1, newEndIndex,myHighlightPainter );
+                                } catch (BadLocationException ex) {
+                                      Logger.getLogger(Front.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                             }
+                              else
+                             {
+                                System.out.println("Inside else");
+                   try {
+                       hilite.addHighlight(beginIndex+4, lastIndex,myHighlightPainter );
+                   } catch (BadLocationException ex) {
                        Logger.getLogger(Front.class.getName()).log(Level.SEVERE, null, ex);
-                          } 
-                     }
-               
-                   
-               
+                   }
+                             }
                      break;
                     }
                 break;
               }
       }
-    });
+    });*/
                 speakingTextWordWorker.execute();
                 System.out.println("Created and executed speakingtext swingworker");
  
@@ -1286,6 +1629,132 @@ TextToSpeech obj=new TextToSpeech();
            rangeSlider.setValue((int) playerModelImpl.getRange());
        }
     }//GEN-LAST:event_rangeSliderStateChanged
+
+    private void jMenu2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu2ActionPerformed
+        // TODO add your handling code here:
+       
+    }//GEN-LAST:event_jMenu2ActionPerformed
+
+    private void jTextArea1CaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_jTextArea1CaretUpdate
+      {  
+          int lineNumber=0, column=0, pos=0;  
+          try  
+          {  
+               pos = jTextArea1.getCaretPosition();  
+               lineNumber = jTextArea1.getLineOfOffset(pos);  
+               column = pos - jTextArea1.getLineStartOffset(lineNumber);  
+          }catch(Exception e){ System.out.println("Error Finding caret position" + e);}  
+          if(jTextArea1.getText().length()==0){lineNumber=0; column=0;}  
+          statusBar.setText("||       Ln "+(lineNumber+1)+", Col "+(column+1));  
+       }
+    }//GEN-LAST:event_jTextArea1CaretUpdate
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        jTextArea1.paste();
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        jTextArea1.cut();
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        jTextArea1.copy();
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        jTextArea1.replaceSelection("");
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void findWhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findWhatActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_findWhatActionPerformed
+
+    private void findNextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findNextButtonActionPerformed
+        // TODO add your handling code here:
+        findNextWithSelection();
+    }//GEN-LAST:event_findNextButtonActionPerformed
+
+    private void findWhatFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_findWhatFocusLost
+       enableDisableButtons();
+    }//GEN-LAST:event_findWhatFocusLost
+
+    private void findWhatInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_findWhatInputMethodTextChanged
+        // TODO add your handling code here:
+        enableDisableButtons();
+    }//GEN-LAST:event_findWhatInputMethodTextChanged
+
+    private void replaceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceButtonActionPerformed
+        // TODO add your handling code here:
+        replaceNext();
+    }//GEN-LAST:event_replaceButtonActionPerformed
+
+    private void replaceAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceAllButtonActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null,"Total replacements made= "+replaceAllNext());
+    }//GEN-LAST:event_replaceAllButtonActionPerformed
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+    
+        replaceButton.setVisible(false);
+        replaceAllButton.setVisible(false);
+        replaceWith.setVisible(false);
+        replaceLabel.setVisible(false);
+
+        FindDialog.setTitle("Find");
+        FindDialog.setSize(385, 246);
+        FindDialog.setVisible(true);
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+       FindDialog.setVisible(false);
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
+       replaceButton.setVisible(true);
+       replaceAllButton.setVisible(true);
+        replaceWith.setVisible(true);
+       replaceLabel.setVisible(true);
+       FindDialog.setTitle("Replace");
+       FindDialog.setVisible(true);
+
+    }//GEN-LAST:event_jMenuItem11ActionPerformed
+
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem12ActionPerformed
+
+    private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem13ActionPerformed
+        
+        jTextArea1.selectAll();
+    }//GEN-LAST:event_jMenuItem13ActionPerformed
+
+    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
+       jTextArea1.insert(new Date().toString(),jTextArea1.getSelectionStart());
+    }//GEN-LAST:event_jMenuItem14ActionPerformed
+
+    private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
+        JCheckBoxMenuItem temp=(JCheckBoxMenuItem)evt.getSource();
+        jTextArea1.setLineWrap(temp.isSelected());
+    }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
+
+    private void jMenuItem17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem17ActionPerformed
+     showBackgroundColorDialog();        
+        
+    }//GEN-LAST:event_jMenuItem17ActionPerformed
+
+    private void formatBackgroundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_formatBackgroundActionPerformed
+        // TODO add your handling code here:
+        showForegroundColorDialog();
+    }//GEN-LAST:event_formatBackgroundActionPerformed
+
+    private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem15ActionPerformed
+      if(fontDialog==null)
+	fontDialog=new FontChooser(jTextArea1.getFont());
+
+        if(fontDialog.showDialog(this,"Choose a font"))
+	jTextArea1.setFont(fontDialog.createFont());
+        
+    }//GEN-LAST:event_jMenuItem15ActionPerformed
     /*public String ResultCalc(String txt)
     {
         
@@ -1311,6 +1780,166 @@ TextToSpeech obj=new TextToSpeech();
 	    rangeSlider.setValue(range);
 	}
     }
+void enableDisableButtons()
+{
+if(findWhat.getText().length()==0)
+{
+findNextButton.setEnabled(false);
+replaceButton.setEnabled(false);
+replaceAllButton.setEnabled(false);
+}
+else
+{
+findNextButton.setEnabled(true);
+replaceButton.setEnabled(true);
+replaceAllButton.setEnabled(true);
+}
+}
+
+int findNext()
+{
+
+String s1=jTextArea1.getText();
+String s2=findWhat.getText();
+
+lastIndex=jTextArea1.getCaretPosition();
+
+int selStart=jTextArea1.getSelectionStart();
+int selEnd=jTextArea1.getSelectionEnd();
+
+if(up.isSelected())
+{
+if(selStart!=selEnd)
+	lastIndex=selEnd-s2.length()-1;
+/*****Notepad doesnt use the else part, but it should be, instead of using caretPosition.***
+else
+	lastIndex=lastIndex-s2.length();
+******/
+
+if(!matchCase.isSelected())
+	lastIndex=s1.toUpperCase().lastIndexOf(s2.toUpperCase(),lastIndex);
+else
+	lastIndex=s1.lastIndexOf(s2,lastIndex);	
+}
+else
+{
+if(selStart!=selEnd)
+	lastIndex=selStart+1;
+if(!matchCase.isSelected())
+	lastIndex=s1.toUpperCase().indexOf(s2.toUpperCase(),lastIndex);
+else
+	lastIndex=s1.indexOf(s2,lastIndex);	
+}
+
+return lastIndex;
+}
+
+public void findNextWithSelection()
+{
+int idx=findNext();
+if(idx!=-1)
+{
+jTextArea1.setSelectionStart(idx);
+jTextArea1.setSelectionEnd(idx+findWhat.getText().length());
+}
+else
+	JOptionPane.showMessageDialog(this,
+	"Cannot find"+" \""+findWhat.getText()+"\"",
+	"Find",JOptionPane.INFORMATION_MESSAGE);
+}
+
+void replaceNext()
+{
+// if nothing is selectd
+if(jTextArea1.getSelectionStart()==jTextArea1.getSelectionEnd()) 
+	{findNextWithSelection();return;}
+
+String searchText=findWhat.getText();
+String temp=jTextArea1.getSelectedText();	//get selected text
+
+//check if the selected text matches the search text then do replacement
+
+if(
+	(matchCase.isSelected() && temp.equals(searchText))
+				||
+	(!matchCase.isSelected() && temp.equalsIgnoreCase(searchText))
+  )
+	jTextArea1.replaceSelection(replaceWith.getText());
+
+findNextWithSelection();
+}
+
+int replaceAllNext()
+{
+if(up.isSelected())
+	jTextArea1.setCaretPosition(jTextArea1.getText().length()-1);
+else
+	jTextArea1.setCaretPosition(0);
+
+int idx=0;
+int counter=0;
+do
+{
+idx=findNext();
+if(idx==-1) break;
+counter++;
+jTextArea1.replaceRange(replaceWith.getText(),idx,idx+findWhat.getText().length());
+}while(idx!=-1);
+
+return counter;
+}
+
+void goTo()
+{
+int lineNumber=0;
+try
+{
+lineNumber=jTextArea1.getLineOfOffset(jTextArea1.getCaretPosition())+1;
+String tempStr=JOptionPane.showInputDialog(this,"Enter Line Number:",""+lineNumber);
+if(tempStr==null)
+	{return;}
+lineNumber=Integer.parseInt(tempStr);
+jTextArea1.setCaretPosition(jTextArea1.getLineStartOffset(lineNumber-1));
+}catch(Exception e){}
+}
+
+void showForegroundColorDialog()
+{
+if(fcolorChooser==null)
+	fcolorChooser=new JColorChooser();
+if(foregroundDialog==null)
+	foregroundDialog=JColorChooser.createDialog
+		(this,
+		formatBackground.getName(),
+		false,
+		fcolorChooser,
+		new ActionListener()
+		{public void actionPerformed(ActionEvent evvv){
+			jTextArea1.setForeground(fcolorChooser.getColor());}},
+		null);		
+
+foregroundDialog.setVisible(true);
+}
+
+
+void showBackgroundColorDialog()
+{
+if(bcolorChooser==null)
+	bcolorChooser=new JColorChooser();
+if(backgroundDialog==null)
+	backgroundDialog=JColorChooser.createDialog
+		(this,
+		formatBackground.getText(),
+		false,
+		bcolorChooser,
+		new ActionListener()
+		{public void actionPerformed(ActionEvent evvv){
+			jTextArea1.setBackground(bcolorChooser.getColor());}},
+		null);		
+
+backgroundDialog.setVisible(true);
+}
+
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -1346,34 +1975,59 @@ TextToSpeech obj=new TextToSpeech();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JDialog FindDialog;
+    private javax.swing.JRadioButton down;
+    private javax.swing.JButton findNextButton;
+    private javax.swing.JTextField findWhat;
+    private javax.swing.JMenuItem formatBackground;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
+    private javax.swing.JMenuItem jMenuItem13;
+    private javax.swing.JMenuItem jMenuItem14;
+    private javax.swing.JMenuItem jMenuItem15;
+    private javax.swing.JMenuItem jMenuItem17;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JOptionPane jOptionPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JProgressBar jProgressBar2;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
@@ -1381,12 +2035,23 @@ TextToSpeech obj=new TextToSpeech();
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem3;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JCheckBox matchCase;
     private javax.swing.JSlider pitchSlider;
     private javax.swing.JSlider rangeSlider;
+    private javax.swing.JButton replaceAllButton;
+    private javax.swing.JButton replaceButton;
+    private javax.swing.JLabel replaceLabel;
+    private javax.swing.JTextField replaceWith;
     private javax.swing.JSlider speedSlider;
+    private javax.swing.JLabel statusBar;
     private javax.swing.JComboBox<String> synthesizerComboBox;
+    private javax.swing.JRadioButton up;
     private javax.swing.JComboBox<String> voiceComboBox;
     private javax.swing.JSlider volumeSlider;
     // End of variables declaration//GEN-END:variables

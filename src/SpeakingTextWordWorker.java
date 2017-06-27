@@ -30,7 +30,7 @@ public class SpeakingTextWordWorker extends SwingWorker<Integer, String> {
     DefaultHighlighter.DefaultHighlightPainter myHighlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
     public SpeakingTextWordWorker(PlayerModelImpl playerModelImpl, JTextArea jTextArea1)
     {
-        this.playerModelImpl=playerModelImpl;
+        this.playerModelImpl = playerModelImpl;
         this.jTextArea1 =  jTextArea1;
         text = jTextArea1.getSelectedText();
     }
@@ -74,8 +74,9 @@ public class SpeakingTextWordWorker extends SwingWorker<Integer, String> {
             }
             System.out.println("looping inside while");
         }
-        hilite.addHighlight(jTextArea1.getSelectionStart()+start,jTextArea1.getSelectionStart()+end, myHighlightPainter);
-        System.out.println("Last Highlisght start : " + start + " end : " +end );
+        hilite.removeAllHighlights();
+        hilite.addHighlight(jTextArea1.getSelectionStart()+oldstart,jTextArea1.getSelectionStart()+start, myHighlightPainter);
+        System.out.println("Last Highlisght start : " + oldstart + " end : " + start );
         System.out.println("You have reached here" );
         return null;
     }
