@@ -1235,7 +1235,6 @@ TextToSpeech obj=new TextToSpeech();
                 String text = pdfStripper.getText(document);
                  jTextArea1.setText(text);
                  document.close();
-
                 }catch(Exception e)
                 {
                     System.out.println("pdf not opening "+e);
